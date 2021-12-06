@@ -1,0 +1,277 @@
+class Input(object):
+    def __init__(self):
+        self.mem = []
+
+    def get_value(self):
+        if self.mem:
+            return self.mem.pop(0)
+        return None
+
+    def set_value(self, input_value):
+        self.mem.append(input_value)
+
+    def __str__(self):
+        return str(self.mem)
+
+    def __len__(self):
+        return len(self.mem)
+
+
+class IntComp(object):
+    def __init__(self, prog):
+        self.prog = list(prog)
+        self.input_object = Input()
+        self.output_object = Input()
+        self.position = 0
+        self.relative_base = 0
+        self.is_stopped = False
+
+    def run(self):
+        self.is_stopped = False
+        while not self.is_stopped:
+            self.execute_step()
+
+    def run_by_step(self):
+        while not self.is_stopped:
+            self.execute_step()
+            yield
+
+    def execute_step(self):
+        operation_command = self.prog[self.position]
+        return self.process_operation(operation_command)
+
+    def process_operation(self, operation_command):
+        operation_code, mode1, mode2, mode3 = self.process_operation_mode(operation_command)
+
+        functions = {
+            1: {"op": self.operation_add, "params": (mode1, mode2, mode3)},
+            2: {"op": self.operation_mul, "params": (mode1, mode2, mode3)},
+            3: {"op": self.operation_input, "params": (mode1, )},
+            4: {"op": self.operation_output, "params": (mode1, )},
+            5: {"op": self.operation_jump_true, "params": (mode1, mode2)},
+            6: {"op": self.operation_jump_false, "params": (mode1, mode2)},
+            7: {"op": self.operation_less_than, "params": (mode1, mode2, mode3)},
+            8: {"op": self.operation_equals, "params": (mode1, mode2, mode3)},
+            9: {"op": self.operation_update_relative_base, "params": (mode1, )},
+            99: {"op": self.operation_stop, "params": ()},
+        }
+
+        operation = functions[operation_code]
+        operation["op"](*operation["params"])
+
+    def read_mem(self, pos):
+        if len(self.prog) <= pos:
+            return 0
+        return self.prog[pos]
+
+    def write_mem(self, pos, value):
+        if pos >= len(self.prog):
+            mem = [0] * (pos + 1)
+            mem[:len(self.prog)] = self.prog
+            self.prog = mem
+        self.prog[pos] = value
+
+    def process_operation_mode(self, operation_command):
+        operation_code = operation_command % 100
+        mode1 = operation_command // 100 % 10
+        mode2 = operation_command // 1000 % 10
+        mode3 = operation_command // 10000 % 10
+        return (
+            operation_code,
+            mode1, mode2, mode3
+        )
+
+    def operation_stop(self):
+        self.is_stopped = True
+        self.position += 1
+
+    def get_param_value(self, val, mode):
+        if mode == 0:
+            # positional
+            return self.read_mem(val)
+        elif mode == 1:
+            # immediate
+            return val
+        elif mode == 2:
+            # relative
+            return self.read_mem(self.relative_base + val)
+
+    def get_addr(self, addr, mode):
+        if mode == 0:
+            # positional
+            return self.read_mem(addr)
+        elif mode == 1:
+            # immediate
+            return addr
+        elif mode == 2:
+            # relative
+            # return self.prog[self.relative_base + val]
+            return self.relative_base + self.read_mem(addr)
+
+    def get_val(self, addr, mode):
+        return self.read_mem(self.get_addr(addr, mode))
+
+    def get_positional_params(self, num):
+        return (self.position + i + 1 for i in range(num))
+
+    def operation_add(self, mode1, mode2, mode3):
+        val1, val2, val3 = self.get_positional_params(3)
+        val1 = self.get_val(val1, mode1)
+        val2 = self.get_val(val2, mode2)
+
+        val3 = self.get_addr(val3, mode3)
+        res = val1 + val2
+        self.write_mem(val3, res)
+        self.position += 4
+
+    def operation_mul(self, mode1, mode2, mode3):
+        val1, val2, val3 = self.get_positional_params(3)
+
+        val1 = self.get_val(val1, mode1)
+        val2 = self.get_val(val2, mode2)
+        val3 = self.get_addr(val3, mode3)
+
+        res = val1 * val2
+        self.write_mem(val3, res)
+        self.position += 4
+
+    def operation_input(self, mode1):
+        val1, = self.get_positional_params(1)
+
+        addr = self.get_addr(val1, mode1)
+        if not self.input_object.mem:
+            self.is_stopped = True
+            return
+        value = self.input_object.get_value()
+        self.write_mem(addr, value)
+        self.position += 2
+
+    def operation_output(self, mode1):
+        val1, = self.get_positional_params(1)
+        val1 = self.get_val(val1, mode1)
+
+        self.output_object.set_value(val1)
+        self.position += 2
+
+    def operation_jump_true(self, mode1, mode2):
+        val1, val2 = self.get_positional_params(2)
+
+        val1 = self.get_val(val1, mode1)
+        val2 = self.get_val(val2, mode2)
+
+        if val1 != 0:
+            self.position = val2
+        else:
+            self.position += 3
+
+    def operation_jump_false(self, mode1, mode2):
+        val1, val2 = self.get_positional_params(2)
+
+        val1 = self.get_val(val1, mode1)
+        val2 = self.get_val(val2, mode2)
+
+        if val1 == 0:
+            self.position = val2
+        else:
+            self.position += 3
+
+    def operation_less_than(self, mode1, mode2, mode3):
+        val1, val2, val3 = self.get_positional_params(3)
+
+        val1 = self.get_val(val1, mode1)
+        val2 = self.get_val(val2, mode2)
+        val3 = self.get_addr(val3, mode3)
+
+        value = 1 if val1 < val2 else 0
+        self.write_mem(val3, value)
+        self.position += 4
+
+    def operation_equals(self, mode1, mode2, mode3):
+        val1, val2, val3 = self.get_positional_params(3)
+
+        val1 = self.get_val(val1, mode1)
+        val2 = self.get_val(val2, mode2)
+        val3 = self.get_addr(val3, mode3)
+
+        value = 1 if val1 == val2 else 0
+        self.write_mem(val3, value)
+        self.position += 4
+
+    def operation_update_relative_base(self, mode1):
+        val1,  = self.get_positional_params(1)
+        val1 = self.get_val(val1, mode1)
+
+        self.relative_base += val1
+        self.position += 2
+
+
+def read_data():
+    with open("input_data/23.txt") as f:
+        raw_data = f.read()
+    return [int(value) for value in raw_data.split(",")]
+
+
+def get_comp(prog, addr):
+    comp = IntComp(prog)
+    comp.input_object.set_value(addr)
+    comp.run()
+    return comp
+
+
+def calc1():
+    prog = read_data()
+    comps = [get_comp(prog, i) for i in range(50)]
+    while True:
+        for i in range(50):
+            comp = comps[i]
+            if not comp.input_object.mem:
+                comp.input_object.set_value(-1)
+            comp.run()
+            if comp.output_object.mem:
+                addr, x, y = (comp.output_object.get_value() for _ in range(3))
+                if addr == 255:
+                    print(y)
+                    return
+                dest_comp = comps[addr]
+                dest_comp.input_object.set_value(x)
+                dest_comp.input_object.set_value(y)
+
+
+def calc2():
+    prog = read_data()
+    comps = [get_comp(prog, i) for i in range(50)]
+    nat = None
+    prev_y = None
+
+    while True:
+        all_idle = True
+        for i in range(50):
+            comp = comps[i]
+            if not comp.input_object.mem:
+                comp.input_object.set_value(-1)
+            comp.run()
+            if comp.output_object.mem:
+                all_idle = False
+                addr, x, y = (comp.output_object.get_value() for _ in range(3))
+                if addr == 255:
+                    nat = (x, y)
+                else:
+                    dest_comp = comps[addr]
+                    dest_comp.input_object.set_value(x)
+                    dest_comp.input_object.set_value(y)
+        if all_idle:
+            x, y = nat
+            if prev_y == y:
+                return y
+
+            dest_comp = comps[0]
+            dest_comp.input_object.set_value(x)
+            dest_comp.input_object.set_value(y)
+
+            prev_y = y
+
+
+if __name__ == "__main__":
+    print("res1:", calc1())
+    print("res2:", calc2())
+
