@@ -1,5 +1,5 @@
 from typing import List
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
 
@@ -52,7 +52,7 @@ OPENING = set(PAIRS.keys())
 class Subsystem:
     chunk: str
     incorrect_char: str = ""
-    incomplete: List[str] = None
+    incomplete: List[str] = field(default_factory=list)
 
     def check(self) -> Result:
         stack: List[str] = []
@@ -78,7 +78,7 @@ class Subsystem:
         return score
 
 
-def parse(raw: str) -> Subsystem:
+def parse(raw: str) -> List[Subsystem]:
     return [Subsystem(line) for line in raw.split("\n")]
 
 

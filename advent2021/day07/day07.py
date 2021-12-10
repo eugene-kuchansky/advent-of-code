@@ -22,7 +22,8 @@ def calc(positions: List[int]) -> int:
         moves = sum(abs(position - i) for position in positions)
         if min_moves is None or min_moves > moves:
             min_moves = moves
-
+    if min_moves is None:
+        raise ValueError("min_moves is not found")
     return min_moves
 
 
@@ -44,7 +45,8 @@ def calc2(positions: List[int]) -> int:
         moves = sum(sum_progression(abs(position - i)) for position in positions)
         if min_moves is None or min_moves > moves:
             min_moves = moves
-
+    if min_moves is None:
+        raise ValueError("min_moves is not found")
     return min_moves
 
 
