@@ -86,13 +86,9 @@ def fold_paper(dots: Dots, fold: Fold) -> Dots:
 
 
 def display_dots(dots) -> str:
-    max_x = 0
-    max_y = 0
-    for dot in dots:
-        if max_x < dot.x:
-            max_x = dot.x
-        if max_y < dot.y:
-            max_y = dot.y
+    max_x = max(dot.x for dot in dots)
+    max_y = max(dot.y for dot in dots)
+
     matrix = [["." for x in range(max_x + 1)] for y in range(max_y + 1)]
     for dot in dots:
         matrix[dot.y][dot.x] = "#"
