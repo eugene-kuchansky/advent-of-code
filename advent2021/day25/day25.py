@@ -94,4 +94,3 @@ assert calc(*parse(RAW)) == 58
 if __name__ == "__main__":
     raw = read_data()
     print(calc(*parse(raw)))
-
