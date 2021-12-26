@@ -31,6 +31,9 @@ class Packet:
     def calculate(self):
         pass
 
+    def sum_versions(self) -> int:
+        return sum(sub_packet.sum_versions() for sub_packet in self.sub_packets) + self.version
+
 
 @dataclass
 class Literal(Packet):
@@ -125,13 +128,9 @@ def get_packet(raw_bits: str) -> Packet:
         return OperatorSubNum(raw_bits)
 
 
-def sum_versions(packet: Packet) -> int:
-    return sum(sum_versions(sub_packet) for sub_packet in packet.sub_packets) + packet.version
-
-
 def calc(raw_bits: str) -> int:
     packet = get_packet(raw_bits)
-    return sum_versions(packet)
+    return packet.sum_versions()
 
 
 def calc2(raw_bits: str) -> int:
