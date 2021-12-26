@@ -197,7 +197,6 @@ def goto(from_place: str, to_place: str, occupied: Set[str], paths) -> int:
 
 
 def get_occupied(amphipods: List[Amphipod], rooms_num):
-    # rooms_num = len(amphipods[0].rooms)
     occupied_places = set()
     for amphipod in amphipods:
         len_places = len(amphipod.places)
@@ -293,50 +292,23 @@ class Wrapper:
 
 
 def calc(amphipods: List[Amphipod], from_rooms, to_rooms, rooms_num: int) -> int:
-    # from_rooms, to_rooms = find_all_routes(BURROW, ROOMS_TYPES)
     q: List = []
     energy = 0
-
     visited = set()
-    while True:
-        visited.add(amphipods_to_key(amphipods, energy, rooms_num))
 
+    while True:
         for updated_amphipods, step_energy in available_steps(amphipods, from_rooms, to_rooms, rooms_num):
             updated_energy = energy + step_energy
-            if amphipods_to_key(updated_amphipods, updated_energy, rooms_num) in visited:
+            k = amphipods_to_key(updated_amphipods, updated_energy, rooms_num)
+            if k in visited:
                 continue
             heapq.heappush(q, (updated_energy, updated_amphipods))
+            visited.add(k)
 
         energy, amphipods = heapq.heappop(q)
-        # energy, amphipods = wrapped.energy, wrapped.amphipods
         if is_organized(amphipods):
             return energy
     return 0
-
-
-# def calc2(amphipods: List[Amphipod]) -> int:
-
-#     # from_rooms, to_rooms = find_all_routes(BURROW2, ROOMS_TYPES2)
-#     q: List[Wrapper] = []
-#     energy = 0
-
-#     visited = set()
-#     while True:
-#         k = amphipods_to_key(amphipods, energy, 4)
-#         visited.add(k)
-
-#         for updated_amphipods, step_energy in available_steps(amphipods, from_rooms, to_rooms, 4):
-#             updated_energy = energy + step_energy
-
-#             if amphipods_to_key(updated_amphipods, updated_energy, 4) in visited:
-#                 continue
-#             heapq.heappush(q, Wrapper(updated_amphipods, updated_energy))
-
-#         wrapped = heapq.heappop(q)
-#         energy, amphipods = wrapped.energy, wrapped.amphipods
-#         if is_organized(amphipods):
-#             return energy
-#     return 0
 
 
 RAW = """#############
@@ -365,6 +337,8 @@ LINES2 = LINES[:3] + EXTRA_LINES + LINES[3:]
 
 AMPHIPODS2 = parse(LINES2, ROOMS_TYPES2)
 FROM_ROOMS2, TO_ROOMS2 = find_all_routes(BURROW2, ROOMS_TYPES2)
+assert calc(AMPHIPODS2, FROM_ROOMS2, TO_ROOMS2, rooms_num=4) == 44169
+
 
 if __name__ == "__main__":
     raw = read_data()
