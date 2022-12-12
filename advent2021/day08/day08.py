@@ -20,7 +20,7 @@ DIGITS = {
     9: set("abcdfg"),
 }
 
-# we know the unique lens segments of 1, 7, 4, 8
+# we know the unique lengths segments of 1, 7, 4, 8
 LEN_TO_DIGIT = {
     2: 1,
     3: 7,
@@ -67,7 +67,6 @@ class Display:
         for digit in self.digits:
             if len(digit) == 6:
                 # 0 6 9
-
                 if digit.issuperset(num_to_digit[4]):
                     # 9 contains all the segments of 4
                     decoded_digit = 9
