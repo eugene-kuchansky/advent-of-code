@@ -55,7 +55,7 @@ class Display:
 
     def _decode_mapping(self) -> Dict[FrozenSet, int]:
         digit_to_num: Dict[FrozenSet, int] = {}
-        num_to_digit: List[Set] = [set] * 10
+        num_to_digit: List[Set] = [set()] * 10
 
         for digit in self.digits:
             decoded_digit = LEN_TO_DIGIT.get(len(digit))

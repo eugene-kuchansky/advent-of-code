@@ -13,7 +13,7 @@ class BingoBoard:
     bingos: Dict[int, bool] = field(default_factory=dict)
 
     @classmethod
-    def from_list(cls, data: List[List[str]]):
+    def from_list(cls, data: List[str]):
         board = [[int(col.strip()) for col in row.split(" ") if col] for row in data]
         board_instance = cls(board)
         return board_instance
@@ -53,12 +53,12 @@ class BingoBoard:
         return sum(num for num, bingo in self.bingos.items() if not bingo)
 
 
-def read_data():
+def read_data() -> List[str]:
     data = [line.strip() for line in sys.stdin]
     return data
 
 
-def create_boards(data):
+def create_boards(data: List[str]):
     numbers = [int(num) for num in data[0].split(",")]
     boards_data = data[1:]
     boards = []
