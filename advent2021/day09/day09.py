@@ -58,13 +58,13 @@ class Floor:
         return neighbors
 
     def find_basins(self) -> List[int]:
-        basils = []
+        basins = []
         for row, col in self._find_low_points_coords():
-            basil = self._find_basil(row, col, visited=set())
-            basils.append(basil)
-        return basils
+            basin = self._find_basin(row, col, visited=set())
+            basins.append(basin)
+        return basins
 
-    def _find_basil(self, row: int, col: int, visited: Set) -> int:
+    def _find_basin(self, row: int, col: int, visited: Set) -> int:
         if (row, col) in visited:
             return 0
         if self.heights[row][col] == MAX_HEIGHT:
@@ -73,7 +73,7 @@ class Floor:
         total = 1
         visited.add((row, col))
         for n_row, n_col in self._get_neighbors_coords(row, col):
-            total += self._find_basil(n_row, n_col, visited)
+            total += self._find_basin(n_row, n_col, visited)
 
         return total
 
@@ -95,8 +95,6 @@ def calc2(floor: Floor) -> int:
 
 assert calc(parse(RAW)) == 15
 assert calc2(parse(RAW)) == 1134
-# assert calc2(parse(RAW)) == 61229
-# assert calc2(parse(RAW2)) == 5353
 
 
 if __name__ == "__main__":

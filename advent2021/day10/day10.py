@@ -94,7 +94,6 @@ def calc2(subsystems: List[Subsystem]) -> int:
     scores = []
     for subsystem in subsystems:
         if subsystem.check() == Result.INCOMPLETE:
-            print(subsystem.incomplete)
             scores.append(subsystem.calc_incomplete_score())
     sorted_scores = sorted(scores)
     middle_score = sorted_scores[(len(sorted_scores) - 1) // 2]
