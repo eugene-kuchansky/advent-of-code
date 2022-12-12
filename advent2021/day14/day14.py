@@ -62,18 +62,21 @@ def calc(template: str, pair_insertion: Dict[str, str], steps: int) -> int:
     for _ in range(steps):
         template_pairs = process_template(template_pairs, pair_insertion)
 
-    # count how many times an element is the first item in pairs
+    # let's count elements. all of them are doubled except first and last element in initial template
     # ACBC -> AC CB BC -> A=1, C=2, B=1
-    # except C, the last element in template, its value has to be incremented by 1
-
-    all_elements: Dict[str, int] = defaultdict(int)
+    # first and last elements values should be increased by 1 so to be truly doubled
+    doubled_elements: Dict[str, int] = defaultdict(int)
     for pair, value in template_pairs.items():
-        all_elements[pair[0]] += value
-    all_elements[template[-1]] += 1
+        doubled_elements[pair[0]] += value
+        doubled_elements[pair[1]] += value
+    doubled_elements[template[0]] += 1
+    doubled_elements[template[-1]] += 1
 
-    elements = Counter(all_elements).most_common()
-    most_common = elements[0][1]
-    least_common = elements[-1][1]
+    elements = {element: value // 2 for element, value in doubled_elements.items()}
+
+    ranked_elements = Counter(elements).most_common()
+    most_common = ranked_elements[0][1]
+    least_common = ranked_elements[-1][1]
 
     return most_common - least_common
 
