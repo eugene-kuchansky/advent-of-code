@@ -115,6 +115,8 @@ def calc1(monkeys: List[Monkey]) -> int:
 
 
 def calc2(monkeys: List[Monkey]) -> int:
+    # well, we know that all divisible_by are primary numbers
+    # so greatest common divider is just multiplication of these numbers
     gcd = 1
     for monkey in monkeys:
         gcd *= monkey.divisible_by

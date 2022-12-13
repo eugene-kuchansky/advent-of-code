@@ -7,9 +7,7 @@ def read_data() -> List[List[str]]:
     return [list(line.strip()) for line in sys.stdin.readlines()]
 
 
-def get_neighbors(
-    row: int, col: int, height_map: List[List[str]]
-) -> List[Tuple[int, int]]:
+def get_neighbors(row: int, col: int, height_map: List[List[str]]) -> List[Tuple[int, int]]:
     max_rows = len(height_map)
     max_columns = len(height_map[0])
     neighbors = []
@@ -39,7 +37,7 @@ def calc1(height_map: List[List[str]]) -> int:
 
     height_map[start_row][start_col] = "a"
 
-    stack: Deque[Tuple[int, Tuple[int, int]], List[Tuple[int, int]]] = deque()
+    stack: Deque[List[Tuple[int, int]]] = deque()
     path = [(start_row, start_col)]
     stack.append(path)
     visited: Set[Tuple[int, int]] = set()
@@ -81,7 +79,7 @@ def calc2(height_map: List[List[str]]) -> int:
             pass
     height_map[start_row][start_col] = "z"
 
-    stack: Deque[Tuple[int, Tuple[int, int]], List[Tuple[int, int]]] = deque()
+    stack: Deque[List[Tuple[int, int]]] = deque()
     path = [(start_row, start_col)]
     stack.append(path)
     visited: Set[Tuple[int, int]] = set()
