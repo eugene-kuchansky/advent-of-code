@@ -1,26 +1,22 @@
 import sys
+from typing import List
 
 
-def read_data():
-    data = [int(line.rstrip()) if line != '\n' else 0 for line in sys.stdin]
-    elf = []
+def read_data() -> List[int]:
     elves = []
-    for calories in data:
-        if not calories:
-            elves.append(sum(elf))
-            elf = []
-        else:
-            elf.append(calories)
-    elves.append(sum(elf))
+    raw_data = sys.stdin.read()
+    for elves_data in raw_data.split("\n\n"):
+        calories = sum([int(calories) for calories in elves_data.split("\n")])
+        elves.append(calories)
     return elves
 
 
-def calc1(data):
-    return max(data)
+def calc1(elves: List[int]) -> int:
+    return max(elves)
 
 
-def calc2(data):
-    return sum(sorted(data, reverse=True)[:3])
+def calc2(elves: List[int]) -> int:
+    return sum(sorted(elves, reverse=True)[:3])
 
 
 if __name__ == "__main__":
