@@ -1,14 +1,14 @@
 import sys
 
 CHOICE_SCORE = {"A": 1, "B": 2, "C": 3}
+WIN_COMBINATIONS = (("C", "B"), ("B", "A"), ("A", "C"))
 
 
 def calc_score(player, opponent):
-    win_combinations = (("C", "B"), ("B", "A"), ("A", "C"))
     win_score = 0
     if player == opponent:
         win_score = 3
-    elif (player, opponent) in win_combinations:
+    elif (player, opponent) in WIN_COMBINATIONS:
         win_score = 6
     return win_score + CHOICE_SCORE[player]
 
@@ -19,10 +19,8 @@ def read_data():
         "Y": {"A": 0, "B": 0, "C": 0},
         "Z": {"A": 0, "B": 0, "C": 0},
     }
-    for line in sys.stdin:
-        line = line.rstrip()
-        if not line:
-            continue
+    raw_data = sys.stdin.read()
+    for line in raw_data.split("\n"):
         elf, your = line.split(" ")
         strategy[your][elf] += 1
     return strategy
