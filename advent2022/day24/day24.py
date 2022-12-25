@@ -170,5 +170,5 @@ def calc2(board: Board, start_point: Point, exit_point: Point) -> int:
 
 if __name__ == "__main__":
     board, start_point, exit_point = read_data()
-    # print(calc1(board, start_point, exit_point))
+    print(calc1(board, start_point, exit_point))
     print(calc2(board, start_point, exit_point))
