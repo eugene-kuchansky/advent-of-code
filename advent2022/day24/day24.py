@@ -1,19 +1,14 @@
 import sys
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, NamedTuple
 from dataclasses import dataclass, field
 from collections import defaultdict
-import math
 
 BLIZZARDS = (">", "<", "^", "v")
 
 
-@dataclass(frozen=True)
-class Point:
+class Point(NamedTuple):
     row: int = 0
     col: int = 0
-
-    def __add__(self, point: "Point") -> "Point":
-        return Point(self.row + point.row, col=self.col + point.col)
 
 
 MOVE_AROUND = (Point(1, 0), Point(-1, 0), Point(0, 1), Point(0, -1), Point(0, 0))
@@ -82,7 +77,7 @@ class Expotition:
 
         for point in self.walkers:
             for move in MOVE_AROUND:
-                new_point = point + move
+                new_point = Point(point[0] + move[0], point[1] + move[1])
                 if new_point in walkers or new_point == self.start_point or board[new_point]:
                     continue
                 if (
