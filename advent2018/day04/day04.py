@@ -25,29 +25,12 @@ def read_data() -> List[Guard]:
         date = items[0][1:]
         time = int(items[1][:-1].split(":")[1])
         if items[2] == "Guard":
-            #     if guard_id:
-            #         guard = Guard(id=guard_id, sleeps=sleeps)
-            #         guards.append(guard)
             guard_id = int(items[3][1:])
-        #     sleeps = defaultdict(list)
         if items[2] == "falls":
             from_time = time
         elif items[2] == "wakes":
             guards[guard_id][date].append(Interval(from_time, time))
     return [Guard(guard_id, sleeps) for guard_id, sleeps in guards.items()]
-    # guard = Guard(id=guard_id, sleeps=sleeps)
-    # guards.append(guard)
-    # for guard in sorted(guards, key=lambda x: x.id):
-    #     print(guard)
-    # exit()
-    # for item in raw_data.split("\n"):
-    #     id_data, _, pos_data, size_data = item.split(" ")
-    #     _, id_ = id_data.split("#")
-    #     col, row = pos_data[:-1].split(",")
-    #     w, h = size_data.split("x")
-    #     rectangles.append(Rect(int(id_), int(col), int(row), int(w), int(h)))
-
-    return guards
 
 
 def get_most_sleep_minute(sleeps: Dict[str, Interval]) -> Tuple[int, int]:
