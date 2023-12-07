@@ -1,8 +1,6 @@
 import sys
-from typing import List, Tuple, NamedTuple
+from typing import List, Tuple
 from math import sqrt, ceil
-from functools import reduce
-import operator
 
 
 def read_data() -> List[str]:
