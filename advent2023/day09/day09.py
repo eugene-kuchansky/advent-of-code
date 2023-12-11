@@ -1,8 +1,6 @@
 import sys
-from typing import List, Dict, Tuple
+from typing import List
 from dataclasses import dataclass
-from itertools import cycle
-import math
 
 
 @dataclass
