@@ -1,8 +1,8 @@
+import random
 import sys
-from typing import List, Dict, Tuple
 from collections import defaultdict
 from dataclasses import dataclass
-import random
+from typing import Dict, List, Tuple
 
 
 def read_data() -> List[str]:
