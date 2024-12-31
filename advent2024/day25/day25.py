@@ -6,8 +6,6 @@ def read_data() -> tuple[list[list[int]], list[list[int]]]:
     keys = []
     locks = []
     for schematic in raw_data.strip().split("\n\n"):
-        print(schematic)
-
         values = [-1] * 5
         add_to = keys
         for i, line in enumerate(schematic.split("\n")):
@@ -26,7 +24,7 @@ def calc1(keys: list[list[int]], locks: list[list[int]]) -> int:
     result = 0
     for lock in locks:
         for key in keys:
-            if all((lock[i] + key[i]) <= 5 for i in range(5)):
+            if all((l + k) <= 5 for l, k in zip(lock, key)):
                 result += 1
 
     return result
